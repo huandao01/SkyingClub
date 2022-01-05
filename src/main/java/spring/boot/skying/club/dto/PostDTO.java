@@ -14,4 +14,10 @@ public class PostDTO extends BaseDTO {
     private Long id;
 
     private String content;
+
+    private String author;
+
+    private Long numberLike;
+
+    private Long numberComment;
 }

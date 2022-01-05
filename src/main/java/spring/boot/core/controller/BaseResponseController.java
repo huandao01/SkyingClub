@@ -12,7 +12,7 @@ public class BaseResponseController {
       responseBody = (ResponseDTO) data;
     }
     else {
-      responseBody.setCode(200);
+      responseBody.setCode(0);
       responseBody.setMessage("successful");
     }
     if (data instanceof Page) {

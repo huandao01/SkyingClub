@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseDTO {
-  private Integer code = 200;
+  private Integer code = 0;
   private String message = null;
   private Object data = null;
 

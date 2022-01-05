@@ -43,15 +43,15 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
     @Override
     public Map<String, Object> login(UsernameAndPasswordDTO dto) {
         if (dto.getPassword() == null || dto.getUsername() == null) {
-            throw new BaseException(400, "password.or.username.is.null");
+            throw new BaseException(400, "Chưa nhập tên đăng nhập hoặc mật khẩu");
         }
         AccountEntity userEntity = getRepository().findByUsername(dto.getUsername());
         if (userEntity == null) {
-            throw new BaseException(400, "username.not.exists");
+            throw new BaseException(400, "Tên đăng nhập không tồn tại");
         }
 
         if (!DigestUtil.sha256Hex(dto.getPassword()).equals(userEntity.getPassword())) {
-            throw new BaseException(400, "password.invalid");
+            throw new BaseException(400, "password không chính xác");
         }
 
         List<String> roles = new ArrayList<>();
@@ -75,7 +75,7 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
     @Override
     public AccountDTO register(AccountDTO accountDTO) {
         if (accountDTO.getPassword() == null || accountDTO.getUsername() == null) {
-            throw new BaseException(400, "password.or.username.is.null");
+            throw new BaseException(400, "Chưa nhập username và password");
         }
         if(getRepository().existsByUsername(accountDTO.getUsername())){
             throw new BaseException("Tên đăng nhập đã tồn tại");
