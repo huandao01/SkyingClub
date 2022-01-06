@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import spring.boot.core.config.userdetail.Authority;
-import spring.boot.core.config.userdetail.UserDetail;
+import spring.boot.core.config.userdetail.UserPrincipal;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
@@ -70,9 +70,9 @@ public class JwtProvider {
         .signWith(secretKey)
         .compact();
 
-    UserDetail userDetail = new UserDetail();
-    userDetail.setId(id);
-    userDetail.setUsername(username);
+    UserPrincipal userPrincipal = new UserPrincipal();
+    userPrincipal.setId(id);
+    userPrincipal.setUsername(username);
     List<GrantedAuthority> authorities = new ArrayList<>();
     for (String s : privileges
     ) {
@@ -80,14 +80,14 @@ public class JwtProvider {
     }
 
     Authentication authentication = new UsernamePasswordAuthenticationToken(
-        userDetail,
+            userPrincipal,
         null,
         authorities
     );
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    additionalInformation.put("userId", userDetail.getId());
+    additionalInformation.put("userId", userPrincipal.getId());
     additionalInformation.put("token", jwt);
     additionalInformation.put("username", username);
     additionalInformation.put("avatar", jwtTokenProperties.getAvatar());
@@ -117,7 +117,7 @@ public class JwtProvider {
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
 
-    UserDetail userDetails = new UserDetail();
+    UserPrincipal userDetails = new UserPrincipal();
 
     userDetails.setId(id);
     userDetails.setUsername(username);

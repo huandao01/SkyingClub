@@ -9,18 +9,17 @@ import spring.boot.core.dao.model.BaseEntity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "post")
+@Table(name = "like_tb")
 @Where(clause = "deleted=0")
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostEntity extends BaseEntity {
+public class LikeEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 2000)
-    private String content;
+    private Long userId;
 
-    private String imgPath;
+    private Long postId;
 }

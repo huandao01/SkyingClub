@@ -1,6 +1,7 @@
 package spring.boot.core.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import spring.boot.core.dto.BaseDTO;
 import spring.boot.core.exception.BaseException;
 import spring.boot.core.exception.DataException;
 import spring.boot.core.map.MapperService;
+import spring.boot.core.storage.StorageService;
 import spring.boot.core.utils.MapperUtils;
 
 import javax.transaction.Transactional;
@@ -26,6 +28,12 @@ public abstract class AbstractBaseService<Entity extends BaseEntity,DTO extends 
   protected abstract Repository getRepository();
 
   private final ObjectMapper mapper = new ObjectMapper();
+
+  @Autowired
+  private StorageService storageService;
+  final protected StorageService getStorageService() {
+    return storageService;
+  }
 
   @Override
   @Cacheable

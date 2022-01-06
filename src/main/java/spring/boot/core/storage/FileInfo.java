@@ -16,4 +16,6 @@ public class FileInfo {
   private Path relativePath;
 
   private Path fileName;
+
+  private String filePath;
 }

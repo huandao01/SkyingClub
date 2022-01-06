@@ -2,6 +2,7 @@ package spring.boot.skying.club.service;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import spring.boot.core.storage.FileInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -14,6 +15,6 @@ public interface FileService {
       throws IOException;
 
 
-  Map<String,Object> upload(MultipartFile file, String fileName);
+  FileInfo upload(MultipartFile file);
 
 }

@@ -1,13 +1,20 @@
 package spring.boot.skying.club.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import spring.boot.core.config.dto.UsernameAndPasswordDTO;
 import spring.boot.core.config.filter.JwtProvider;
+import spring.boot.core.config.userdetail.UserPrincipal;
 import spring.boot.core.exception.BaseException;
 import spring.boot.core.service.AbstractBaseService;
 import spring.boot.core.utils.DigestUtil;
 import spring.boot.skying.club.dto.AccountDTO;
+import spring.boot.skying.club.dto.UserDTO;
 import spring.boot.skying.club.entity.AccountEntity;
 import spring.boot.skying.club.repository.AccountRepository;
 import spring.boot.core.config.filter.JwtProvider.JwtTokenProperties;
@@ -32,7 +39,7 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
 
     @Override
     protected void beforeSave(AccountEntity entity, AccountDTO dto) {
-        if(entity.getId() != null){
+        if (entity.getId() != null) {
             AccountEntity accountEntity = getRepository().findById(entity.getId()).orElse(new AccountEntity());
             entity.setUsername(accountEntity.getUsername());
             entity.setPassword(accountEntity.getPassword());
@@ -77,15 +84,40 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
         if (accountDTO.getPassword() == null || accountDTO.getUsername() == null) {
             throw new BaseException(400, "Chưa nhập username và password");
         }
-        if(getRepository().existsByUsername(accountDTO.getUsername())){
+        if (getRepository().existsByUsername(accountDTO.getUsername())) {
             throw new BaseException("Tên đăng nhập đã tồn tại");
         }
         AccountEntity accountEntity = mapToEntity(accountDTO);
 
         accountEntity.setRole(3L);
         accountEntity.setPassword(DigestUtil.sha256Hex(accountDTO.getPassword()));
-        save(accountEntity,accountDTO);
+        save(accountEntity, accountDTO);
 
         return accountDTO;
+    }
+
+
+    @Override
+    public AccountDTO getCurrentUser() {
+        return findById(getCurrentUserId());
+    }
+
+    @Override
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        UserPrincipal userDetail = (UserPrincipal) authentication.getPrincipal();
+        return userDetail.getId();
+    }
+
+    @Override
+    public Page<UserDTO> getUser(UserDTO userDTO, Pageable page) {
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setFullName(userDTO.getFullName());
+        return getRepository().search(accountDTO, page).map(e ->
+                new UserDTO(e.getId(), e.getFullName()));
     }
 }

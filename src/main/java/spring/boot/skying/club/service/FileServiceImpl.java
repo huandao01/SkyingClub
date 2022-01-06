@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import spring.boot.core.exception.BaseException;
+import spring.boot.core.storage.FileInfo;
 import spring.boot.core.storage.StorageService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class FileServiceImpl implements FileService {
 
     private final Path imageLocation = Paths.get("uploads");
+    private final String DOCUMENT = "documents";
 
     @Autowired
     private StorageService storageService;
@@ -63,15 +65,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Map<String,Object> upload(MultipartFile file, String fileName) {
-//        storageService.save(file);
-//
-//        fileEntity.setFile(fileInfo.getRelativePath().toString());
-//        fileEntity.setFileName(fileName);
-//
-//        FileEntity saveEntity = getRepository().save(fileEntity);
-//
-//        return mapToDTO(saveEntity);
-        return null;
+    public FileInfo upload(MultipartFile file) {
+        return storageService.store(file, DOCUMENT);
     }
 }

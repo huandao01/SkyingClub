@@ -10,13 +10,13 @@ import java.util.Collection;
 
 @Getter
 @Setter
-public class UserDetail implements UserDetails {
+public class UserPrincipal implements UserDetails {
   private Long id;
   private String username;
   private String password;
   private Collection<Authority> authorities;
 
-  public UserDetail() {authorities = new ArrayList<>();}
+  public UserPrincipal() {authorities = new ArrayList<>();}
 
   public void addAuthority(String auth){authorities.add(new Authority(auth));}
 

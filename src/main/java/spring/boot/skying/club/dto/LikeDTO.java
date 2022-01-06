@@ -10,18 +10,10 @@ import spring.boot.core.dto.BaseDTO;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO extends BaseDTO {
+public class LikeDTO extends BaseDTO {
     private Long id;
 
-    private String content;
+    private Long userId;
 
-    private String imgPath;
-
-    private String author;
-
-    private Long numberLike;
-
-    private Long numberComment;
-
-    private Boolean isLike;
+    private Long postId;
 }

@@ -5,21 +5,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
-public class WebConfiguration extends WebMvcConfigurationSupport {
+public class WebConfiguration implements WebMvcConfigurer {
 
-  @Value("${app.storage.location:uploads}")
+  @Value("${app.storage.location:./files/public}")
   private String filesPath;
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/uploads/**")
+    registry.addResourceHandler("/files/**")
         .addResourceLocations("file:" + (filesPath.startsWith("/") ? "//" : "") + filesPath + "/");
-
   }
 
   @Override
