@@ -12,6 +12,6 @@ import spring.boot.skying.club.entity.PostEntity;
 public interface PostRepository extends BaseRepository<PostEntity, PostDTO,Long> {
     @Override
     @Query("select e from PostEntity e" +
-            " where (lower(e.content) like :#{#dto.content} or :#{#dto.content} is null) ")
+            " where (lower(e.content) like %:#{#dto.content}% or :#{#dto.content} is null) ")
     Page<PostEntity> search(PostDTO dto, Pageable pageable);
 }
