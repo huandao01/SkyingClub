@@ -15,8 +15,8 @@ public interface AccountRepository extends BaseRepository<AccountEntity, Account
 
     @Override
     @Query("select e from AccountEntity e" +
-            " where (:#{#dto.username} is null or lower(e.username) like :#{#dto.username}) " +
-            " and (:#{#dto.fullName} is null or lower(e.fullName) like :#{#dto.fullName}) " +
+            " where (lower(e.username) like %:#{#dto.username}% or :#{#dto.username} is null) " +
+            " and (lower(e.fullName) like %:#{#dto.fullName}% or :#{#dto.fullName} is null) " +
             " and (e.role = :#{#dto.role} or :#{#dto.role} is null) "
     )
     Page<AccountEntity> search(AccountDTO dto, Pageable pageable);
