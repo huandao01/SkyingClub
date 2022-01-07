@@ -20,31 +20,32 @@ import java.util.stream.Collectors;
 @Service
 public class JwtProvider {
 
-  public JwtProvider(SecretKey secretKey) {
-    this.secretKey = secretKey;
-  }
-
-  private final SecretKey secretKey;
-
-  public Map<String, Object> generateToken(JwtTokenProperties jwtTokenProperties) {
-    Long id = jwtTokenProperties.getId();
-    String username = jwtTokenProperties.getUsername();
-    String fullName = jwtTokenProperties.getFullName();
-    List<String> privileges = jwtTokenProperties.getPrivileges();
-    Map<String, Object> jwtAdditionalInformation = jwtTokenProperties.getJwtAdditionalInformation();
-    Map<String, Object> additionalInformation = jwtTokenProperties.getAdditionalInformation();
-
-    if (jwtAdditionalInformation == null) {
-      jwtAdditionalInformation = new HashMap<>();
+    public JwtProvider(SecretKey secretKey) {
+        this.secretKey = secretKey;
     }
 
-    if (additionalInformation == null) {
-      additionalInformation = new HashMap<>();
-    }
+    private final SecretKey secretKey;
 
-    if (privileges == null) {
-      privileges = new ArrayList<>();
-    }
+    public Map<String, Object> generateToken(JwtTokenProperties jwtTokenProperties) {
+        Long id = jwtTokenProperties.getId();
+        String username = jwtTokenProperties.getUsername();
+        String fullName = jwtTokenProperties.getFullName();
+        String email = jwtTokenProperties.getEmail();
+        List<String> privileges = jwtTokenProperties.getPrivileges();
+        Map<String, Object> jwtAdditionalInformation = jwtTokenProperties.getJwtAdditionalInformation();
+        Map<String, Object> additionalInformation = jwtTokenProperties.getAdditionalInformation();
+
+        if (jwtAdditionalInformation == null) {
+            jwtAdditionalInformation = new HashMap<>();
+        }
+
+        if (additionalInformation == null) {
+            additionalInformation = new HashMap<>();
+        }
+
+        if (privileges == null) {
+            privileges = new ArrayList<>();
+        }
 
 //    if (id != null && id > 0) {
 //      privileges.add("ROLE_Authenticated");
@@ -53,97 +54,101 @@ public class JwtProvider {
 //    if (!privileges.contains("ROLE_Unauthenticated")) {
 //      privileges.add("ROLE_Unauthenticated");
 //    }
-    JwtBuilder jwtBuilder = Jwts.builder()
-        .claim("userId", id)
-        .claim("username", username)
-        .claim("fullname", fullName)
-        .claim("authorities", privileges);
-    for (String key : jwtAdditionalInformation.keySet()) {
-      jwtBuilder.claim(key, jwtAdditionalInformation.get(key));
-      additionalInformation.put(key, jwtAdditionalInformation.get(key));
+        JwtBuilder jwtBuilder = Jwts.builder()
+                .claim("userId", id)
+                .claim("username", username)
+                .claim("email", email)
+                .claim("fullname", fullName)
+                .claim("authorities", privileges);
+        for (String key : jwtAdditionalInformation.keySet()) {
+            jwtBuilder.claim(key, jwtAdditionalInformation.get(key));
+            additionalInformation.put(key, jwtAdditionalInformation.get(key));
 
+        }
+
+        String jwt = jwtBuilder
+                .setIssuedAt(new Date())
+                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
+                .signWith(secretKey)
+                .compact();
+
+        UserPrincipal userPrincipal = new UserPrincipal();
+        userPrincipal.setId(id);
+        userPrincipal.setUsername(username);
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String s : privileges
+        ) {
+            authorities.add(new Authority(s));
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userPrincipal,
+                null,
+                authorities
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        additionalInformation.put("userId", userPrincipal.getId());
+        additionalInformation.put("token", jwt);
+        additionalInformation.put("email", email);
+        additionalInformation.put("username", username);
+        additionalInformation.put("avatar", jwtTokenProperties.getAvatar());
+        additionalInformation.put("full_name", fullName);
+        additionalInformation.put("authorities", privileges);
+        additionalInformation.put("role", jwtTokenProperties.getRole());
+
+        return additionalInformation;
     }
 
-    String jwt = jwtBuilder
-        .setIssuedAt(new Date())
-        .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
-        .signWith(secretKey)
-        .compact();
+    public UsernamePasswordAuthenticationToken getAuthentication(String token) {
 
-    UserPrincipal userPrincipal = new UserPrincipal();
-    userPrincipal.setId(id);
-    userPrincipal.setUsername(username);
-    List<GrantedAuthority> authorities = new ArrayList<>();
-    for (String s : privileges
-    ) {
-      authorities.add(new Authority(s));
+        JwtParser jwtParser = Jwts.parser().setSigningKey(secretKey);
+
+        Jws claimsJws = jwtParser.parseClaimsJws(token);
+
+        Claims claims = (Claims) claimsJws.getBody();
+
+        Long id = Long.valueOf(claims.get("userId").toString());
+        String username = (String) claims.get("username");
+
+        String arrayAuthorize = claims.get("authorities").toString();
+
+        Collection authorities =
+                Arrays.stream(arrayAuthorize
+                                .substring(1, arrayAuthorize.length() - 1).split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+        UserPrincipal userDetails = new UserPrincipal();
+
+        userDetails.setId(id);
+        userDetails.setUsername(username);
+        userDetails.setAuthorities(authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-            userPrincipal,
-        null,
-        authorities
-    );
+    @Getter
+    @Builder
+    public static class JwtTokenProperties {
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+        private final Long id;
 
-    additionalInformation.put("userId", userPrincipal.getId());
-    additionalInformation.put("token", jwt);
-    additionalInformation.put("username", username);
-    additionalInformation.put("avatar", jwtTokenProperties.getAvatar());
-    additionalInformation.put("full_name", fullName);
-    additionalInformation.put("authorities", privileges);
-    additionalInformation.put("role",jwtTokenProperties.getRole());
+        private final String username;
 
-    return additionalInformation;
-  }
+        private final String fullName;
 
-  public UsernamePasswordAuthenticationToken getAuthentication( String token) {
+        private final String role;
 
-    JwtParser jwtParser = Jwts.parser().setSigningKey(secretKey);
+        private final String avatar;
 
-     Jws claimsJws = jwtParser.parseClaimsJws(token);
+        private final String email;
 
-     Claims claims = (Claims) claimsJws.getBody();
+        private final List<String> privileges;
 
-    Long id = Long.valueOf(claims.get("userId").toString());
-    String username = (String) claims.get("username");
+        private final Map<String, Object> additionalInformation;
 
-    String arrayAuthorize = claims.get("authorities").toString();
+        private final Map<String, Object> jwtAdditionalInformation;
 
-    Collection authorities =
-        Arrays.stream(arrayAuthorize
-            .substring(1,arrayAuthorize.length()-1).split(","))
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
-
-    UserPrincipal userDetails = new UserPrincipal();
-
-    userDetails.setId(id);
-    userDetails.setUsername(username);
-    userDetails.setAuthorities(authorities);
-    return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
-  }
-
-  @Getter
-  @Builder
-  public static class JwtTokenProperties {
-
-    private final Long id;
-
-    private final String username;
-
-    private final String fullName;
-
-    private final String role;
-
-    private final String avatar;
-
-    private final List<String> privileges;
-
-    private final Map<String, Object> additionalInformation;
-
-    private final Map<String, Object> jwtAdditionalInformation;
-
-  }
+    }
 }

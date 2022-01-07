@@ -38,13 +38,15 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
     }
 
     @Override
-    protected void beforeSave(AccountEntity entity, AccountDTO dto) {
-        if (entity.getId() != null) {
-            AccountEntity accountEntity = getRepository().findById(entity.getId()).orElse(new AccountEntity());
-            entity.setUsername(accountEntity.getUsername());
-            entity.setPassword(accountEntity.getPassword());
+    public void mapToEntity(AccountDTO dto, AccountEntity entity) {
+        if (dto.getId() != null) {
+            dto.setUsername(entity.getUsername());
+            dto.setPassword(entity.getPassword());
+            if(dto.getRole() == null){
+                dto.setRole(entity.getRole());
+            }
         }
-        super.beforeSave(entity, dto);
+        super.mapToEntity(dto, entity);
     }
 
     @Override
@@ -71,6 +73,7 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
                 .fullName(userEntity.getFullName())
+                .email(userEntity.getEmail())
                 .role(roles.get(0))
                 .avatar(userEntity.getAvatar())
                 .privileges(roles)

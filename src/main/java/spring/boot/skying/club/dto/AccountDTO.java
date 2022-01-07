@@ -21,5 +21,7 @@ public class AccountDTO extends BaseDTO {
 
     private String fullName;
 
+    private String avatar;
+
     private Long role;
 }

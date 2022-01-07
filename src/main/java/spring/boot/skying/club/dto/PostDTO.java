@@ -24,4 +24,6 @@ public class PostDTO extends BaseDTO {
     private Long numberComment;
 
     private Boolean isLike;
+
+    private String avatar;
 }

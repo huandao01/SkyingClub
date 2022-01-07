@@ -39,10 +39,11 @@ public class PostServiceImpl extends AbstractBaseService<PostEntity, PostDTO, Po
         AccountEntity accountEntity = accountRepository.findById(entity.getCreatedBy()).orElse(null);
         if (accountEntity != null) {
             dto.setAuthor(accountEntity.getFullName());
+            dto.setAvatar(accountEntity.getAvatar());
         }
 
         dto.setNumberLike(likeRepository.countByPostId(entity.getId()));
-        dto.setNumberComment(commentRepository.countByUserId(entity.getId()));
+        dto.setNumberComment(commentRepository.countByPostId(entity.getId()));
 
         Long currentUserId = accountService.getCurrentUserId();
         dto.setIsLike(likeRepository.existsByUserIdAndPostId(currentUserId, entity.getId()));

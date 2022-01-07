@@ -17,5 +17,9 @@ public class CommentDTO extends BaseDTO {
 
     private Long postId;
 
+    private String fullName;
+
+    private String avatar;
+
     private String content;
 }
