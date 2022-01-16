@@ -3,7 +3,6 @@ package spring.boot.skying.club.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import spring.boot.core.service.AbstractBaseService;
-import spring.boot.skying.club.dto.AccountDTO;
 import spring.boot.skying.club.dto.PostDTO;
 import spring.boot.skying.club.entity.AccountEntity;
 import spring.boot.skying.club.entity.PostEntity;

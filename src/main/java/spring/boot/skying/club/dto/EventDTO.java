@@ -22,4 +22,6 @@ public class EventDTO extends BaseDTO {
     private String imgPath;
 
     private String content;
+
+    private Boolean isRegister = true;
 }

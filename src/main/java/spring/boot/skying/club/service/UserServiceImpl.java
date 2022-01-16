@@ -38,11 +38,15 @@ public class UserServiceImpl extends AbstractBaseService<UserEntity, UserDTO, Us
     protected void specificMapToDTO(UserEntity entity, UserDTO dto) {
         super.specificMapToDTO(entity, dto);
         AccountEntity accountEntity = accountRepository.findById(entity.getUserId()).orElse(null);
-        dto.setUserName(accountEntity.getFullName());
-        dto.setAvatar(accountEntity.getAvatar());
-        dto.setEmail(accountEntity.getEmail());
-        dto.setAchievement(userRepository.findAchievement(entity.getUserId()));
-        dto.setEventName(userRepository.findEventName(entity.getUserId()));
+        if(accountEntity != null) {
+            dto.setUserName(accountEntity.getFullName());
+            dto.setAvatar(accountEntity.getAvatar());
+            dto.setEmail(accountEntity.getEmail());
+            dto.setAchievement(userRepository.findAchievement(entity.getUserId()));
+            dto.setEventName(userRepository.findEventName(entity.getUserId()));
+        }
     }
+
+
 
 }

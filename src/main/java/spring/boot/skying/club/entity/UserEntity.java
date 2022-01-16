@@ -29,5 +29,7 @@ public class UserEntity extends BaseEntity {
     @Column(length = 2000)
     private String interest;
 
+    private Long coin ;
+
     private Long score ;
 }

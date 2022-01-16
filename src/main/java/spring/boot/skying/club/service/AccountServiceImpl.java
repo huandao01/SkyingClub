@@ -1,8 +1,7 @@
 package spring.boot.skying.club.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,11 +13,13 @@ import spring.boot.core.exception.BaseException;
 import spring.boot.core.service.AbstractBaseService;
 import spring.boot.core.utils.DigestUtil;
 import spring.boot.skying.club.dto.AccountDTO;
-import spring.boot.skying.club.dto.UserDTO;
 import spring.boot.skying.club.entity.AccountEntity;
 import spring.boot.skying.club.repository.AccountRepository;
 import spring.boot.core.config.filter.JwtProvider.JwtTokenProperties;
+import spring.boot.skying.club.repository.UserRepository;
 
+
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,9 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -90,12 +94,12 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
         if (getRepository().existsByUsername(accountDTO.getUsername())) {
             throw new BaseException("Tên đăng nhập đã tồn tại");
         }
-        AccountEntity accountEntity = mapToEntity(accountDTO);
 
+        AccountEntity accountEntity = mapToEntity(accountDTO);
         accountEntity.setRole(3L);
         accountEntity.setPassword(DigestUtil.sha256Hex(accountDTO.getPassword()));
         save(accountEntity, accountDTO);
-
+   //     userRepository.addRecord(userRepository.getAccountSpecialId(),new Date(System.currentTimeMillis()));
         return accountDTO;
     }
 

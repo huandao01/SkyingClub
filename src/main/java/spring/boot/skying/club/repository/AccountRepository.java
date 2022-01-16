@@ -21,10 +21,6 @@ public interface AccountRepository extends BaseRepository<AccountEntity, Account
     )
     Page<AccountEntity> search(AccountDTO dto, Pageable pageable);
 
-    @Query("select case when count(e) > 0 then true else false end from AccountEntity e"
-            + " where e.username = :#{#username}"
-            + " and (e.id <> :#{#id} or :#{#id} is null)")
-    boolean existsByUsernameNotPassword(String username, Long id);
 
     boolean existsByUsername(String username);
 

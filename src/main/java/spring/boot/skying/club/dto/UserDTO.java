@@ -35,6 +35,8 @@ public class UserDTO extends BaseDTO {
 
     private Long score ;
 
+    private Long coin;
+
     private List<String> achievement;
 
     private List<String> eventName;

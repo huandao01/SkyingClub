@@ -31,9 +31,14 @@ public class ParticipantServiceImpl extends AbstractBaseService<ParticipantEntit
     protected void specificMapToDTO(ParticipantEntity entity, ParticipantDTO dto) {
         super.specificMapToDTO(entity, dto);
         AccountEntity accountEntity = accountRepository.findById(entity.getUserId()).orElse(null);
-        dto.setNameUser(accountEntity.getFullName());
-        dto.setAvatar(accountEntity.getAvatar());
-        EventEntity eventEntity = eventRepository.findById(entity.getEventId()).orElse(null);
-        dto.setNameEvent(eventEntity.getNameEvent());
+        if(accountEntity != null) {
+            dto.setNameUser(accountEntity.getFullName());
+            dto.setAvatar(accountEntity.getAvatar());
+            EventEntity eventEntity = eventRepository.findById(entity.getEventId()).orElse(null);
+            if(eventEntity != null)
+            dto.setNameEvent(eventEntity.getNameEvent());
+        }
+
     }
+
 }
