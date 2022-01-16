@@ -20,7 +20,8 @@ public interface UserRepository extends BaseRepository<UserEntity, UserDTO,Long>
 
     @Override
     @Query("select e from UserEntity e" +
-            " where e.userId = :#{#dto.userId} or :#{#dto.userId} is null")
+            " where e.userId = :#{#dto.userId} or :#{#dto.userId} is null" +
+            " order by e.score desc")
     Page<UserEntity> search(UserDTO dto, Pageable pageable);
 
     @Query(value = "select  p.achievement from participant p, event e, account a where p.user_id = a.id and p.event_id = e.id and a.id = :id",nativeQuery= true)

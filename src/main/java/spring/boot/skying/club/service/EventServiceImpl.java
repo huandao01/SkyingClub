@@ -21,6 +21,6 @@ public class EventServiceImpl extends AbstractBaseService<EventEntity, EventDTO,
         return eventRepository;
     }
 
-    
+
 
 }

@@ -95,6 +95,10 @@ public class AccountServiceImpl extends AbstractBaseService<AccountEntity, Accou
             throw new BaseException("Tên đăng nhập đã tồn tại");
         }
 
+        if (getRepository().existsByEmail(accountDTO.getEmail())) {
+            throw new BaseException("Email đã tồn tại");
+        }
+
         AccountEntity accountEntity = mapToEntity(accountDTO);
         accountEntity.setRole(3L);
         accountEntity.setPassword(DigestUtil.sha256Hex(accountDTO.getPassword()));

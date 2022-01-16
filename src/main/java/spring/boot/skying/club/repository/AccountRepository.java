@@ -24,5 +24,7 @@ public interface AccountRepository extends BaseRepository<AccountEntity, Account
 
     boolean existsByUsername(String username);
 
+    boolean existsByEmail(String username);
+
     AccountEntity findByUsername(String username);
 }
